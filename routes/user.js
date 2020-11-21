@@ -1,12 +1,27 @@
 const express = require('express');
 const router = express.Router(); //sub-routing
-var User = require('../model/user');
+var User = require('../model/user'); //ORM
+var sendGridModule = require('../util/sendgrid');
 
 
 router.post('/login', (req, res) => {
-	res.end('Login success');
+	User.findOne({ "username": req.body.username }, (err, result) => {
+		if(err){
+			res.json({message: "Error while login", status: 500});
+		}
+		else if(result == null){
+			res.json({message: "Error while login", status: 500});
+		}
+		else if(result.password != req.body.password){
+			res.json({message: "Username or Password is wrong", status: 500});
+		}
+		else {
+			res.json({status: 200, data: result});
+		}
+	});
 });
 
+/*http://localhost:8080/user/register */
 router.post('/register', (req, res) => {
 	var new_user = new User();//create an object
 	new_user.username = req.body.username;
@@ -23,6 +38,7 @@ router.post('/register', (req, res) => {
 		}
 		else {
 			console.log('**** Entered into save else part ****');
+			sendGridModule.sendEmail(result.email, result.username);
 			res.json({status: 200, data: result});
 		}
 	});

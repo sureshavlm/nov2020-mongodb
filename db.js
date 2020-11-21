@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const chalk = require('chalk');
 const url = 'mongodb://localhost:27017/nov2020';
+//const url = 'mongodb://nuser:nuser123@ds023550.mlab.com:23550/nov2020';
 
 mongoose.connect(url, { 
     useNewUrlParser: true, 

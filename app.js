@@ -1,7 +1,9 @@
 const express = require('express');
+var bodyParser = require('body-parser');
+
 var userRoutes = require('./routes/user');
 var productsRoutes = require('./routes/products');
-var bodyParser = require('body-parser');
+var db = require('./db');
 
 const app = express();
 
@@ -17,13 +19,21 @@ http://localhost:8080/user/forgot */
 app.use(bodyParser()); //every request needs to parsed
 // support parsing of application/json type post data
 app.use(bodyParser.json());
-
 //support parsing of application/x-www-form-urlencoded post data
 app.use(bodyParser.urlencoded({ extended: true }));
 
+function isSessionValid(req, res, next) {
+	if(req.session.isValid){
+		next();
+	}
+	else {
+		res.json({message: "user sessaion expired"});
+	}
+}
+
 app.use('/user', userRoutes);
 
-app.use('/products', productsRoutes);
+app.use('/products',  productsRoutes);
 
 
 app.get('/', (req, res) => {
